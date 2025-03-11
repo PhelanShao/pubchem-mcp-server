@@ -17,9 +17,32 @@ async def test():
         async with stdio_client(server_params) as (read, write):
             async with ClientSession(read, write) as session:
                 await session.initialize()
-                logging.info("调用 get_pubchem_data...")
-                result = await session.call_tool("get_pubchem_data", {"query": "aspirin", "format": "JSON"})
-                print("返回结果:", result)
+                
+                # 测试JSON格式
+                logging.info("测试1: 获取JSON格式数据...")
+                result = await session.call_tool("get_pubchem_data", {
+                    "query": "aspirin",
+                    "format": "JSON"
+                })
+                print("\nJSON格式结果:", result)
+                
+                # 测试CSV格式
+                logging.info("\n测试2: 获取CSV格式数据...")
+                result = await session.call_tool("get_pubchem_data", {
+                    "query": "aspirin",
+                    "format": "CSV"
+                })
+                print("\nCSV格式结果:", result)
+                
+                # 测试XYZ格式（包含3D结构）
+                logging.info("\n测试3: 获取XYZ格式数据（包含3D结构）...")
+                result = await session.call_tool("get_pubchem_data", {
+                    "query": "aspirin",
+                    "format": "XYZ",
+                    "include_3d": True
+                })
+                print("\nXYZ格式结果:", result)
+
     except Exception as e:
         logging.error(f"发生错误: {e}")
 
