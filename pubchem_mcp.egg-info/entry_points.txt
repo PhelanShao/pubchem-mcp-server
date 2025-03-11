@@ -1,2 +1,0 @@
-[console_scripts]
-pubchem-mcp = pubchem_mcp.server:main
