@@ -1,0 +1,44 @@
+{
+  "name": "@modelcontextprotocol/server-pubchem",
+  "version": "1.0.0",
+  "description": "PubChem MCP Server for chemical structure and property data retrieval",
+  "main": "dist/index.js",
+  "bin": {
+    "mcp-server-pubchem": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "pubchem",
+    "chemistry",
+    "chemical-structures",
+    "model-context-protocol"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "axios": "^1.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/jest": "^29.5.12",
+    "typescript": "^5.0.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}
