@@ -29,7 +29,7 @@ setup(
     python_requires=">=3.8",
     install_requires=[
         "httpx>=0.24.0",
-        "mcp-sdk>=0.1.0",
+        "mcp>=1.3.0",  # 使用最新的稳定版本
         "typing-extensions>=4.0.0",
     ],
     entry_points={

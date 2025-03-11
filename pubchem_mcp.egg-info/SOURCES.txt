@@ -1,0 +1,11 @@
+LICENSE
+README.md
+setup.py
+pubchem_mcp/__init__.py
+pubchem_mcp/server.py
+pubchem_mcp.egg-info/PKG-INFO
+pubchem_mcp.egg-info/SOURCES.txt
+pubchem_mcp.egg-info/dependency_links.txt
+pubchem_mcp.egg-info/entry_points.txt
+pubchem_mcp.egg-info/requires.txt
+pubchem_mcp.egg-info/top_level.txt
