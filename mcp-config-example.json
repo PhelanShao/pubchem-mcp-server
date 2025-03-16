@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "pubchem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-pubchem"],
+      "disabled": false,
+      "autoApprove": []
+    }
+  }
+}

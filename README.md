@@ -1,24 +1,24 @@
 # PubChem MCP Server
 
-一个用于获取PubChem化合物数据的Model Context Protocol (MCP) 服务器。
+A Model Context Protocol (MCP) server for retrieving PubChem compound data.
 
-## 功能特点
+## Features
 
-- 支持通过化合物名称或CID查询
-- 提供多种输出格式：JSON、CSV、XYZ
-- 支持3D结构数据获取和转换
-- 本地缓存系统，减少API调用
-- 自动重试机制，提高可靠性
+- Supports query by compound name or CID
+- Provides multiple output formats: JSON, CSV, XYZ
+- Supports 3D structure data retrieval and conversion
+- Local caching system to reduce API calls
+- Automatic retry mechanism for improved reliability
 
-## 安装
+## Installation
 
 ```bash
 npm install -g @modelcontextprotocol/server-pubchem
 ```
 
-## 配置
+## Configuration
 
-在你的MCP配置文件中添加以下配置：
+Add the following configuration to your MCP settings file:
 
 ```json
 {
@@ -31,34 +31,34 @@ npm install -g @modelcontextprotocol/server-pubchem
 }
 ```
 
-## 使用方法
+## Usage
 
-服务器提供以下工具：
+The server provides the following tools:
 
 ### get_pubchem_data
 
-获取化合物的结构和属性数据。
+Retrieve compound structure and property data.
 
-参数：
-- `query`: (必需) 化合物名称或PubChem CID
-- `format`: (可选) 输出格式，可选 "JSON"、"CSV" 或 "XYZ"，默认为 "JSON"
-- `include_3d`: (可选) 是否包含3D结构信息（仅当format为"XYZ"时有效），默认为 false
+Parameters:
+- `query`: (Required) Compound name or PubChem CID
+- `format`: (Optional) Output format, options: "JSON", "CSV", or "XYZ", default: "JSON"
+- `include_3d`: (Optional) Whether to include 3D structure information (only valid when format is "XYZ"), default: false
 
-示例：
+Examples:
 
 ```python
-# 获取JSON格式数据
+# Get data in JSON format
 result = await session.call_tool("get_pubchem_data", {
     "query": "aspirin"
 })
 
-# 获取CSV格式数据
+# Get data in CSV format
 result = await session.call_tool("get_pubchem_data", {
     "query": "aspirin",
     "format": "CSV"
 })
 
-# 获取XYZ格式的3D结构数据
+# Get 3D structure data in XYZ format
 result = await session.call_tool("get_pubchem_data", {
     "query": "aspirin",
     "format": "XYZ",
@@ -66,31 +66,33 @@ result = await session.call_tool("get_pubchem_data", {
 })
 ```
 
-## 缓存
+## Caching
 
-- 属性数据缓存在内存中
-- 3D结构数据（XYZ格式）缓存在 `~/.pubchem-mcp/cache` 目录下
-- 缓存文件名格式为 `[CID].xyz`
+- Property data is cached in memory
+- 3D structure data (XYZ format) is cached in `~/.pubchem-mcp/cache` directory
+- Cache file name format: `[CID].xyz`
 
-## 依赖
+## Dependencies
 
 - @modelcontextprotocol/sdk
 - axios
-- rdkit-js
+- rdkit-js (optional, for enhanced 3D structure generation)
 
-## 开发
+**Note:** While rdkit-js is listed as a dependency, the server can still function without it. When rdkit-js is not available, the server will fall back to using PubChem's 3D structure data directly, with a simplified SDF parser for XYZ format conversion.
+
+## Development
 
 ```bash
-# 安装依赖
+# Install dependencies
 npm install
 
-# 构建
+# Build
 npm run build
 
-# 运行测试
+# Run tests
 npm test
 ```
 
-## 许可证
+## License
 
 MIT

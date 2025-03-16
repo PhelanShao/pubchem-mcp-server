@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import { PubChemData, ToolInput, AxiosConfig } from './types';
+import { getXYZStructure } from './xyz';
 
 // 配置日志
 const logger = {
@@ -40,8 +41,8 @@ axiosInstance.interceptors.response.use(undefined, async (err: AxiosError & { co
   return axiosInstance(config);
 });
 
-export async function getPubchemData(query: string, format: string = 'JSON'): Promise<string> {
-  logger.info(`接收到查询请求: query=${query}, format=${format}`);
+export async function getPubchemData(query: string, format: string = 'JSON', include3d: boolean = false): Promise<string> {
+  logger.info(`接收到查询请求: query=${query}, format=${format}, include3d=${include3d}`);
 
   if (!query?.trim()) {
     return "Error: query cannot be empty.";
@@ -113,12 +114,41 @@ export async function getPubchemData(query: string, format: string = 'JSON'): Pr
   }
 
   const fmt = format.toUpperCase();
-  if (fmt === 'CSV') {
+  
+  // 处理XYZ格式
+  if (fmt === 'XYZ') {
+    if (include3d) {
+      try {
+        // 获取化合物信息
+        const compoundInfo = {
+          id: data.CID,
+          name: data.IUPACName,
+          formula: data.MolecularFormula,
+          smiles: data.CanonicalSMILES,
+          inchikey: data.InChIKey
+        };
+        
+        // 获取XYZ结构
+        const xyzStructure = await getXYZStructure(data.CID, data.CanonicalSMILES, compoundInfo);
+        
+        if (xyzStructure) {
+          return xyzStructure;
+        } else {
+          return "Error: Failed to generate 3D structure.";
+        }
+      } catch (error: any) {
+        return `Error generating 3D structure: ${error.message}`;
+      }
+    } else {
+      return "Error: include_3d parameter must be true for XYZ format.";
+    }
+  } else if (fmt === 'CSV') {
     const headers = ['CID', 'IUPACName', 'MolecularFormula', 'MolecularWeight', 
                     'CanonicalSMILES', 'InChI', 'InChIKey'];
     const values = headers.map(h => data[h as keyof PubChemData] || '');
     return `${headers.join(',')}\n${values.join(',')}`;
   } else {
+    // 默认返回JSON
     return JSON.stringify(data, null, 2);
   }
 }
