@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "pubchem": {
+      "command": "/usr/local/bin/node",
+      "args": [
+        "/Users/phelan/develop/pubchem-mcp-server/js_minimal_server.js"
+      ],
+      "env": {},
+      "disabled": false,
+      "autoApprove": []
+    }
+  }
+}

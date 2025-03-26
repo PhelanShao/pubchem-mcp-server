@@ -1,8 +1,5 @@
 #!/usr/bin/env node
 import axios, { AxiosError, AxiosInstance } from 'axios';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as os from 'os';
 import { PubChemData, ToolInput, AxiosConfig } from './types';
 import { getXYZStructure } from './xyz';
 
@@ -22,7 +19,7 @@ const cache: CacheData = {};
 
 // 创建具有重试功能的axios实例
 const axiosInstance: AxiosInstance = axios.create({
-  timeout: 10000
+  timeout: 30000
 });
 
 axiosInstance.interceptors.response.use(undefined, async (err: AxiosError & { config: AxiosConfig }) => {

@@ -13,6 +13,7 @@ export declare function generate3DFromSMILES(smiles: string): any;
 export declare function sdfToMol(sdfContent: string): any;
 /**
  * 简单的SDF解析器，不依赖于RDKit
+ * @param sdfContent SDF文件内容
  */
 export declare function parseSDF(sdfContent: string): any;
 /**

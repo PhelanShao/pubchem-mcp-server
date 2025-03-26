@@ -151,6 +151,7 @@ function sdfToMol(sdfContent) {
 }
 /**
  * 简单的SDF解析器，不依赖于RDKit
+ * @param sdfContent SDF文件内容
  */
 function parseSDF(sdfContent) {
     try {
@@ -172,21 +173,15 @@ function parseSDF(sdfContent) {
                 break;
             }
             const line = lines[lineIndex];
-            if (line.length < 35) {
+            if (line.length < 31) { // 元素符号至少在第31列
                 continue;
             }
-            // 解析SDF格式的原子行
-            // 格式: x y z element ...
-            // 使用正则表达式匹配坐标和元素符号
-            const match = line.match(/\s*(-?\d+\.\d+)\s+(-?\d+\.\d+)\s+(-?\d+\.\d+)\s+([A-Za-z]+)/);
-            if (!match) {
-                continue;
-            }
-            const x = parseFloat(match[1]);
-            const y = parseFloat(match[2]);
-            const z = parseFloat(match[3]);
-            const symbol = match[4];
-            if (isNaN(x) || isNaN(y) || isNaN(z)) {
+            // 解析SDF格式的原子行 - 使用固定宽度解析
+            const x = parseFloat(line.substring(0, 10).trim());
+            const y = parseFloat(line.substring(10, 20).trim());
+            const z = parseFloat(line.substring(20, 30).trim());
+            const symbol = line.substring(31, 34).trim(); // 元素符号在第31-34列
+            if (isNaN(x) || isNaN(y) || isNaN(z) || !symbol) {
                 continue;
             }
             atoms.push({ symbol, x, y, z });
@@ -334,19 +329,15 @@ async function getXYZStructure(cid, smiles, compoundInfo) {
                 break;
             }
             const line = lines[lineIndex];
-            if (line.length < 35) {
+            if (line.length < 31) { // 元素符号至少在第31列
                 continue;
             }
-            // 使用正则表达式匹配坐标和元素符号
-            const match = line.match(/\s*(-?\d+\.\d+)\s+(-?\d+\.\d+)\s+(-?\d+\.\d+)\s+([A-Za-z]+)/);
-            if (!match) {
-                continue;
-            }
-            const x = parseFloat(match[1]);
-            const y = parseFloat(match[2]);
-            const z = parseFloat(match[3]);
-            const symbol = match[4];
-            if (isNaN(x) || isNaN(y) || isNaN(z)) {
+            // 使用固定宽度解析原子坐标和元素符号
+            const x = parseFloat(line.substring(0, 10).trim());
+            const y = parseFloat(line.substring(10, 20).trim());
+            const z = parseFloat(line.substring(20, 30).trim());
+            const symbol = line.substring(31, 34).trim(); // 元素符号在第31-34列
+            if (isNaN(x) || isNaN(y) || isNaN(z) || !symbol) {
                 continue;
             }
             xyzString += `${symbol} ${x.toFixed(6)} ${y.toFixed(6)} ${z.toFixed(6)}\n`;

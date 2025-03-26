@@ -14,5 +14,5 @@ const query = args[0];
 const format = args[1] || 'JSON';
 const include3d = args[2] === 'true';
 (0, index_1.getPubchemData)(query, format, include3d)
-    .then(result => console.log(result))
-    .catch(error => console.error('Error:', error));
+    .then((result) => console.log(result))
+    .catch((error) => console.error('Error:', error));

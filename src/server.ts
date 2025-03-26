@@ -29,7 +29,7 @@ class PubChemServer {
     this.setupToolHandlers();
     
     // 错误处理
-    this.server.onerror = (error) => console.error('[MCP Error]', error);
+    this.server.onerror = (error: Error) => console.error('[MCP Error]', error);
     process.on('SIGINT', async () => {
       await this.server.close();
       process.exit(0);

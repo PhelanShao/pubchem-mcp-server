@@ -1,0 +1,65 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Mac OS
+.DS_Store
+
+# Test files and development leftovers
+*~
+.idea/
+.vscode/
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+.tox/
+
+# Project-specific temporary files
+correct_server.py
+fixed_lowlevel_server.py
+fixed_server.py
+fixed_simplest_server.py
+lowlevel_server.py
+minimal_server.py
+simplest_server.py
+strict_mcp_server.py
+pubchem_fixed_api.py
+pubchem_integrated_server.py
+pubchem_mcp_server_part1.py
+pubchem_mcp_wrapper.py
+pubchem_wrapper.py
+pubchem_api.py
+complete_config.json
+correct_config.json
+lowlevel_config.json
+updated_mcp_config.json
+setup_script.sh
+setup.sh

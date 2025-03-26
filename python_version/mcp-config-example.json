@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "pubchem": {
+      "command": "python",
+      "args": ["-m", "pubchem_mcp_server.server"],
+      "env": {},
+      "disabled": false,
+      "autoApprove": []
+    }
+  }
+}

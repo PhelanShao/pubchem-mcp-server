@@ -1,98 +1,144 @@
 # PubChem MCP Server
 
-A Model Context Protocol (MCP) server for retrieving PubChem compound data.
+A Model Context Protocol (MCP) server for retrieving chemical compound data from PubChem database.
+
+## Overview
+
+PubChem MCP Server is a Python implementation of an MCP server that allows AI models to query chemical compound information from the PubChem database. It provides easy access to compound properties, 2D structures, and 3D molecular coordinates through a standard MCP interface.
 
 ## Features
 
-- Supports query by compound name or CID
-- Provides multiple output formats: JSON, CSV, XYZ
-- Supports 3D structure data retrieval and conversion
-- Local caching system to reduce API calls
-- Automatic retry mechanism for improved reliability
+- Query compounds by name or PubChem CID
+- Retrieve comprehensive compound data including:
+  - IUPAC name
+  - Molecular formula
+  - Molecular weight
+  - SMILES notation
+  - InChI and InChIKey
+- Support for multiple output formats:
+  - JSON (default)
+  - CSV
+  - XYZ (3D structure)
+- Built-in caching system to improve performance
+- Automatic retry mechanism for API reliability
+- Fallback 3D structure generation if PubChem 3D is unavailable
+
+## Requirements
+
+- Python 3.8+
+- Requests library
+- RDKit (optional, for enhanced 3D structure handling)
 
 ## Installation
 
+### From Source
+
 ```bash
-npm install -g @modelcontextprotocol/server-pubchem
+# Clone the repository
+git clone https://github.com/yourusername/pubchem-mcp-server.git
+cd pubchem-mcp-server/python_version
+
+# Install the package
+pip install -e .
+
+# For enhanced 3D structure handling, install with RDKit
+pip install -e ".[rdkit]"
 ```
 
-## Configuration
+## MCP Configuration
 
-Add the following configuration to your MCP settings file:
+To use the server with Claude or other MCP-capable AI models, add the following to your MCP configuration file:
 
 ```json
 {
   "mcpServers": {
     "pubchem": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-pubchem"]
+      "command": "python3",
+      "args": ["/path/to/pubchem-mcp-server/python_version/mcp_server.py"],
+      "env": {
+        "PYTHONUNBUFFERED": "1"
+      },
+      "disabled": false,
+      "autoApprove": [
+        "get_pubchem_data",
+        "download_structure"
+      ]
     }
   }
 }
 ```
 
-## Usage
-
-The server provides the following tools:
+## Available Tools
 
 ### get_pubchem_data
 
-Retrieve compound structure and property data.
+Retrieves chemical compound structure and property data.
 
 Parameters:
-- `query`: (Required) Compound name or PubChem CID
-- `format`: (Optional) Output format, options: "JSON", "CSV", or "XYZ", default: "JSON"
-- `include_3d`: (Optional) Whether to include 3D structure information (only valid when format is "XYZ"), default: false
+- `query` (required): Compound name or PubChem CID
+- `format` (optional): Output format - "JSON" (default), "CSV", or "XYZ"
+- `include_3d` (optional): Whether to include 3D structure (only valid when format is "XYZ")
 
-Examples:
+Example use:
+```
+<use_mcp_tool>
+<server_name>pubchem</server_name>
+<tool_name>get_pubchem_data</tool_name>
+<arguments>
+{
+  "query": "aspirin",
+  "format": "JSON"
+}
+</arguments>
+</use_mcp_tool>
+```
 
-```python
-# Get data in JSON format
-result = await session.call_tool("get_pubchem_data", {
-    "query": "aspirin"
-})
+### download_structure
 
-# Get data in CSV format
-result = await session.call_tool("get_pubchem_data", {
-    "query": "aspirin",
-    "format": "CSV"
-})
+Downloads structure files for a compound.
 
-# Get 3D structure data in XYZ format
-result = await session.call_tool("get_pubchem_data", {
-    "query": "aspirin",
-    "format": "XYZ",
-    "include_3d": True
-})
+Parameters:
+- `cid` (required): PubChem CID
+- `format` (optional): File format - "sdf" (default), "mol", or "smi"
+- `filename` (optional): Custom filename for the downloaded structure
+
+Example use:
+```
+<use_mcp_tool>
+<server_name>pubchem</server_name>
+<tool_name>download_structure</tool_name>
+<arguments>
+{
+  "cid": "2244",
+  "format": "sdf"
+}
+</arguments>
+</use_mcp_tool>
+```
+
+## Project Structure
+
+```
+pubchem-mcp-server/
+├── python_version/               # Python implementation
+│   ├── mcp_server.py             # Main MCP server script
+│   ├── setup.py                  # Package installation script
+│   ├── pubchem_mcp_server/       # Core package
+│   │   ├── __init__.py
+│   │   ├── pubchem_api.py        # PubChem API interaction
+│   │   ├── xyz_utils.py          # 3D structure and XYZ format utilities
+│   │   ├── server.py             # MCP server implementation
+│   │   ├── cli.py                # Command-line interface
+│   │   └── async_processor.py    # Asynchronous request handling
+└── LICENSE
 ```
 
 ## Caching
 
-- Property data is cached in memory
-- 3D structure data (XYZ format) is cached in `~/.pubchem-mcp/cache` directory
-- Cache file name format: `[CID].xyz`
-
-## Dependencies
-
-- @modelcontextprotocol/sdk
-- axios
-- rdkit-js (optional, for enhanced 3D structure generation)
-
-**Note:** While rdkit-js is listed as a dependency, the server can still function without it. When rdkit-js is not available, the server will fall back to using PubChem's 3D structure data directly, with a simplified SDF parser for XYZ format conversion.
-
-## Development
-
-```bash
-# Install dependencies
-npm install
-
-# Build
-npm run build
-
-# Run tests
-npm test
-```
+The server uses a caching mechanism to improve performance:
+- API responses are cached in memory
+- 3D structure data is cached in `~/.pubchem-mcp/cache/`
 
 ## License
 
-MIT
+This project is licensed under the MIT License - see the LICENSE file for details.
