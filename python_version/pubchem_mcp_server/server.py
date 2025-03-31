@@ -95,8 +95,8 @@ class PubChemServer:
                             },
                             "format": {
                                 "type": "string",
-                                "description": "Output format, options: 'JSON', 'CSV', or 'XYZ', default: 'JSON'",
-                                "enum": ["JSON", "CSV", "XYZ"],
+                                "description": "Output format, options: 'JSON', 'CSV', 'XYZ', or 'SDF', default: 'JSON'", # Updated description
+                                "enum": ["JSON", "CSV", "XYZ", "SDF"], # Added SDF
                             },
                             "include_3d": {
                                 "type": "boolean",
@@ -290,6 +290,69 @@ class PubChemServer:
                     ],
                     "isError": True,
                 }
+
+        # Handle download_structure
+        elif tool_name == "download_structure":
+            cid = args.get("cid")
+            file_format = args.get("format", "sdf").lower() # Default to sdf
+            # filename = args.get("filename") # We won't use filename to avoid saving on server
+
+            if not cid:
+                raise McpError(INVALID_PARAMS, "Missing required parameter: cid")
+            if file_format not in ["sdf", "mol", "smi"]:
+                 raise McpError(INVALID_PARAMS, f"Invalid format: {file_format}. Must be 'sdf', 'mol', or 'smi'.")
+
+            # Construct PubChem URL (Note: MOL and SMILES might not have 3D directly available like SDF)
+            # We'll try for 3D SDF, but MOL/SMI might return 2D if 3D isn't standard.
+            # Adjust record_type based on format if necessary, but PUG REST often handles it.
+            record_type = "3d" if file_format == "sdf" else "2d" # Assume 2D for mol/smi unless PubChem provides 3D via display type
+            url = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/{cid}/record/{file_format.upper()}/?record_type={record_type}&response_type=display&display_type={file_format}"
+            logger.info(f"Attempting to download structure from URL: {url}")
+
+            try:
+                # Use a session similar to pubchem_api.py
+                from .pubchem_api import create_session # Reuse session creation
+                session = create_session()
+                response = session.get(url, timeout=60)
+                response.raise_for_status() # Raise HTTPError for bad responses (4xx or 5xx)
+
+                if response.text:
+                    logger.info(f"Successfully downloaded {file_format.upper()} content for CID {cid}.")
+                    return {
+                        "content": [
+                            {
+                                "type": "text",
+                                # Return raw text content. Client can save it.
+                                "text": response.text,
+                            },
+                        ],
+                    }
+                else:
+                    logger.error(f"Downloaded empty content for CID {cid}, format {file_format}.")
+                    return {
+                        "content": [{"type": "text", "text": f"Error: Downloaded empty content for CID {cid}, format {file_format}."}],
+                        "isError": True,
+                    }
+            except requests.exceptions.RequestException as e:
+                 error_msg = f"Error downloading structure file (CID: {cid}, Format: {file_format}): {str(e)}"
+                 # Try to get more specific error from response if available
+                 try:
+                     fault_details = e.response.json().get('Fault', {}).get('Details', [])
+                     if fault_details:
+                         error_msg = f"Error downloading structure file (CID: {cid}, Format: {file_format}): {fault_details[0]}"
+                 except:
+                     pass # Ignore errors parsing error response
+                 logger.error(error_msg, exc_info=True)
+                 return {
+                     "content": [{"type": "text", "text": error_msg}],
+                     "isError": True,
+                 }
+            except Exception as e:
+                 logger.error(f"Unexpected error during structure download (CID: {cid}, Format: {file_format}): {e}", exc_info=True)
+                 return {
+                     "content": [{"type": "text", "text": f"Unexpected error: {str(e)}"}],
+                     "isError": True,
+                 }
         else:
             raise McpError(
                 METHOD_NOT_FOUND,
