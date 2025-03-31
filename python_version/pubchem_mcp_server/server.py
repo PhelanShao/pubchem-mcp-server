@@ -107,6 +107,29 @@ class PubChemServer:
                     },
                 },
                 {
+                    "name": "download_structure",
+                    "description": "Download compound structure file",
+                    "inputSchema": {
+                        "type": "object",
+                        "properties": {
+                            "cid": {
+                                "type": "string",
+                                "description": "PubChem CID",
+                            },
+                            "format": {
+                                "type": "string",
+                                "description": "File format, options: 'sdf', 'mol', 'smi', default: 'sdf'",
+                                "enum": ["sdf", "mol", "smi"],
+                            },
+                            "filename": {
+                                "type": "string",
+                                "description": "Filename to save as (optional)",
+                            },
+                        },
+                        "required": ["cid"],
+                    },
+                },
+                {
                     "name": "submit_pubchem_request",
                     "description": "Submit asynchronous request for PubChem data (useful for slower queries)",
                     "inputSchema": {
